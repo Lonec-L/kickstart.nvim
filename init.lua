@@ -145,6 +145,7 @@ vim.opt.splitbelow = true
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.tabstop = 4
+vim.opt.expandtab = true
 
 vim.opt.shiftwidth = 4
 
@@ -153,6 +154,9 @@ vim.opt.inccommand = 'split'
 
 -- Show which line your cursor is on
 vim.opt.cursorline = true
+
+-- color line length column
+vim.opt.colorcolumn = '80'
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
@@ -164,6 +168,8 @@ vim.keymap.set('i', 'jj', '<Esc>')
 vim.keymap.set('n', '<C-j>', vim.cmd.cnext)
 vim.keymap.set('n', '<C-k>', vim.cmd.cprev)
 vim.keymap.set('n', '<leader>pv', '<cmd>e .<CR>')
+vim.keymap.set('n', '<C-u>', '<C-u>zz')
+vim.keymap.set('n', '<C-d>', '<C-d>zz')
 
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
@@ -543,7 +549,7 @@ require('lazy').setup({
         clangd = {},
         -- gopls = {},
         -- pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -567,6 +573,24 @@ require('lazy').setup({
             },
           },
         },
+
+        -- tailwindcss = {
+        --   filetypes = {
+        --     'rust',
+        --   },
+        --   settings = {
+        --     tailwindCSS = {
+        --       experimental = {
+        --         classRegex = {
+        --           [[\.\s*"([^"]+)"]], -- Regex for Tailwind classes in Maud
+        --         },
+        --       },
+        --       includeLanguages = {
+        --         rust = 'html', -- Treat Rust files as HTML
+        --       },
+        --     },
+        --   },
+        -- },
       }
 
       -- Ensure the servers and tools above are installed
@@ -637,6 +661,16 @@ require('lazy').setup({
       },
     },
   },
+
+  -- {
+  --   'akinsho/flutter-tools.nvim',
+  --   lazy = false,
+  --   dependencies = {
+  --     'nvim-lua/plenary.nvim',
+  --     'stevearc/dressing.nvim', -- optional for vim.ui.select
+  --   },
+  --   config = true,
+  -- },
 
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
@@ -755,6 +789,13 @@ require('lazy').setup({
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     'folke/tokyonight.nvim',
+    opts = {
+      transparent = true,
+      styles = {
+        sidebars = 'transparent',
+        floats = 'transparent',
+      },
+    },
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
@@ -821,7 +862,7 @@ require('lazy').setup({
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
         additional_vim_regex_highlighting = { 'ruby' },
       },
-      indent = { enable = true, disable = { 'ruby' } },
+      indent = { enable = true, disable = { 'ruby', 'dart' } },
     },
     config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
