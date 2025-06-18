@@ -117,6 +117,7 @@ vim.opt.clipboard = 'unnamedplus'
 
 -- Enable break indent
 vim.opt.breakindent = true
+vim.opt.smartindent = false
 
 -- Save undo history
 vim.opt.undofile = true
@@ -156,7 +157,7 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- color line length column
-vim.opt.colorcolumn = '80'
+vim.opt.colorcolumn = '100'
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
@@ -360,10 +361,19 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+      vim.keymap.set('n', '<leader>gf', builtin.git_files, { desc = 'Search [G]it [F]iles' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+
+      vim.keymap.set('n', '<leader>sa', function()
+        builtin.find_files {
+          hidden = true,
+          no_ignore = true,
+          no_ignore_parent = true,
+        }
+      end, { desc = '[S]earch [A]ll files' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -547,6 +557,18 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         clangd = {},
+        arduino_language_server = {
+          filetypes = { 'arduino' },
+          cmd = {
+            '/Users/lonec/go/bin/arduino-language-server',
+            '-cli',
+            '/opt/homebrew/bin/arduino-cli',
+            '-cli-config',
+            '/Users/lonec/Library/Arduino15/arduino-cli.yaml',
+            '-fqbn',
+            'esp32:esp32:esp32s3',
+          },
+        },
         -- gopls = {},
         -- pyright = {},
         rust_analyzer = {},
@@ -652,12 +674,18 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         python = { 'black' },
+        markdown = { 'prettier' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
         -- javascript = { { "prettierd", "prettier" } },
+      },
+      formatters = {
+        black = {
+          prepend_args = { '--preview' },
+        },
       },
     },
   },
@@ -852,7 +880,7 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = { 'arduino', 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -860,9 +888,9 @@ require('lazy').setup({
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
         --  If you are experiencing weird indenting issues, add the language to
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
+        additional_vim_regex_highlighting = { 'ruby', 'python' },
       },
-      indent = { enable = true, disable = { 'ruby', 'dart' } },
+      indent = { enable = true, disable = { 'ruby', 'dart', 'python', 'cpp' } },
     },
     config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
@@ -885,6 +913,15 @@ require('lazy').setup({
     init = function()
       vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
     end,
+  },
+
+  {
+    'anurag3301/nvim-platformio.lua',
+    dependencies = {
+      { 'akinsho/nvim-toggleterm.lua' },
+      { 'nvim-telescope/telescope.nvim' },
+      { 'nvim-lua/plenary.nvim' },
+    },
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
