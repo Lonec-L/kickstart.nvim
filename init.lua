@@ -741,6 +741,7 @@ require('lazy').setup({
         python = { 'black' },
         markdown = { 'prettier' },
         cpp = { 'clang-format' },
+        rustfmt = { 'rust' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
